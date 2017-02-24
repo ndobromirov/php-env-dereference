@@ -10,7 +10,7 @@ developer is either using that strange names in his code or starting to do
 workarounds.
 
 This particular library solves this based on the idea from variable dereference
-feature that is (already in PHP engine)[http://php.net/manual/en/language.variables.variable.php].
+feature that is [already in PHP engine](http://php.net/manual/en/language.variables.variable.php).
 ```
 <?php
 $a = 'hello';
@@ -19,7 +19,7 @@ $$a = 'world';
 echo "$a ${$a}\n", "hello world\n";
 ```
 
-This is very similar to the (phpdotenv)[https://github.com/vlucas/phpdotenv]
+This is very similar to the [phpdotenv](https://github.com/vlucas/phpdotenv)
 nested variables functionality, but exposing only it with a simpler syntax and
 allowing recursive dereferencing.
 
