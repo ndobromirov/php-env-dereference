@@ -1,6 +1,6 @@
 {
     "name": "ndobromirov/php-env-dereference",
-    "description": "LCache library.",
+    "description": "PHP environment variables dereference library.",
     "license": "MIT",
     "authors": [
         {
