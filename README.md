@@ -23,15 +23,21 @@ This is very similar to the [phpdotenv](https://github.com/vlucas/phpdotenv)
 nested variables functionality, but exposing only it with a simpler syntax and
 allowing recursive dereferencing.
 
-## Library example
+## Library examples
 ```
 // We have this environment variables.
 putenv('MY_VAR_1=1');
 putenv('MY_VAR_2=#MY_VAR_1');
-putenv('MY_VAR=#MY_VAR_2');
+putenv('MY_VAR_3=#MY_VAR_2');
+putenv('MY_VAR_4=#MY_VAR_2 #MY_VAR_3');
 
-echo EnvDereference\Variable::get('MY_VAR'); // Should output '#MY_VAR_1'.
-echo EnvDereference\Variable::getRecursive('MY_VAR'); // Should output '1'.
+// Simple dereferencing
+echo EnvDereference\Variable::get('MY_VAR_3'); // Should output '#MY_VAR_1'.
+echo EnvDereference\Variable::getRecursive('MY_VAR_3'); // Should output '1'.
+
+// Multiple dereferencing
+echo EnvDereference\Variable::getEmbedded('MY_VAR_4'); // Should output '#MY_VAR_1 #MY_VAR_2'.
+echo EnvDereference\Variable::getEmbeddedRecursive('MY_VAR_4'); // Should output '1 1'.
 ```
 
 ## Install

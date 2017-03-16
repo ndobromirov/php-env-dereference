@@ -19,23 +19,35 @@ class VariableTest extends \PHPUnit\Framework\TestCase
     {
         putenv('MY_VAR_1=1');
         putenv('MY_VAR_2=#MY_VAR_1');
-        putenv('MY_VAR=#MY_VAR_2');
+        putenv('MY_VAR_3=#MY_VAR_2');
+        putenv('MY_VAR_4=#MY_VAR_2 #MY_VAR_3');
     }
 
     public static function tearDownAfterClass()
     {
-        putenv('MY_VAR');
         putenv('MY_VAR_1');
         putenv('MY_VAR_2');
+        putenv('MY_VAR_3');
+        putenv('MY_VAR_4');
     }
 
     public function testSingleDereference()
     {
-        $this->assertEquals('#MY_VAR_1', Variable::get('MY_VAR'));
+        $this->assertEquals('1', Variable::get('MY_VAR_2'));
     }
 
     public function testRecursiveDereference()
     {
-        $this->assertEquals('1', Variable::getRecursive('MY_VAR'));
+        $this->assertEquals('1', Variable::getRecursive('MY_VAR_3'));
+    }
+
+    public function testEmbedding()
+    {
+        $this->assertEquals('#MY_VAR_1 #MY_VAR_2', Variable::getEmbedded('MY_VAR_4'));
+    }
+
+    public function testRecursiveEmbedding()
+    {
+        $this->assertEquals('1 1', Variable::getEmbeddedRecursive('MY_VAR_4'));
     }
 }
