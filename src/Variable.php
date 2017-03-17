@@ -21,6 +21,8 @@ class Variable
      *
      * @param string $name
      *   Name of env var to dereference.
+     * @param string $default
+     *   Value to use, when the requested variable is not found.
      * @param string $prefix
      *   Defauts to #.
      *
@@ -28,9 +30,9 @@ class Variable
      *   string - Extracted value, when present.
      *   bool - false when the env variable is not set.
      */
-    public static function get($name, $prefix = self::DEFAULT_PREFIX)
+    public static function get($name, $default = false, $prefix = self::DEFAULT_PREFIX)
     {
-        $value = getenv($name);
+        $value = self::getWithDefault($name, $default);
         if (strpos($value, $prefix) === 0) {
             $value = getenv(substr($value, strlen($prefix)));
         }
@@ -42,6 +44,8 @@ class Variable
      *
      * @param string $name
      *   Name of env var to dereference.
+     * @param string $default
+     *   Value to use, when the requested variable is not found.
      * @param string $prefix
      *   Defauts to #.
      *
@@ -49,9 +53,9 @@ class Variable
      *   string - Extracted value, when present.
      *   bool - false when the env variable is not set.
      */
-    public static function getRecursive($name, $prefix = self::DEFAULT_PREFIX)
+    public static function getRecursive($name, $default = false, $prefix = self::DEFAULT_PREFIX)
     {
-        $value = getenv($name);
+        $value = self::getWithDefault($name, $default);
         while (strpos($value, $prefix) === 0) {
             $value = getenv(substr($value, strlen($prefix)));
         }
@@ -62,13 +66,16 @@ class Variable
      * Multy-way variable dereferencing utility.
      *
      * @param type $name
+     * @param string $default
+     *   Value to use, when the requested variable is not found.
      * @param type $prefix
+     *
      * @return type
      */
-    public static function getEmbedded($name, $prefix = self::DEFAULT_PREFIX)
+    public static function getEmbedded($name, $default = false, $prefix = self::DEFAULT_PREFIX)
     {
         $matches = [];
-        $value = getenv($name);
+        $value = self::getWithDefault($name, $default);
         $pattern = '/' . preg_quote($prefix, '/') . '([A-Z0-9_]+)/';
         if (false !== $value && preg_match_all($pattern, $value, $matches)) {
             $replacements = [];
@@ -85,13 +92,16 @@ class Variable
      * Multy-way recursive variable dereferencing utility.
      *
      * @param type $name
+     * @param string $default
+     *   Value to use, when the requested variable is not found.
      * @param type $prefix
+     *
      * @return type
      */
-    public static function getEmbeddedRecursive($name, $prefix = self::DEFAULT_PREFIX)
+    public static function getEmbeddedRecursive($name, $default = false, $prefix = self::DEFAULT_PREFIX)
     {
         $matches = [];
-        $value = getenv($name);
+        $value = self::getWithDefault($name, $default);
         $pattern = '/' . preg_quote($prefix, '/') . '([A-Z0-9_]+)/';
         while (false !== $value && preg_match_all($pattern, $value, $matches)) {
             $map = [];
@@ -102,5 +112,10 @@ class Variable
             $value = strtr($value, $map);
         }
         return $value;
+    }
+
+    private static function getWithDefault($name, $default)
+    {
+        return ($value = getenv($name)) !== false ? $value : $default;
     }
 }

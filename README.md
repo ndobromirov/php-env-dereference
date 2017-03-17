@@ -38,6 +38,9 @@ echo EnvDereference\Variable::getRecursive('MY_VAR_3'); // Should output '1'.
 // Multiple dereferencing
 echo EnvDereference\Variable::getEmbedded('MY_VAR_4'); // Should output '#MY_VAR_1 #MY_VAR_2'.
 echo EnvDereference\Variable::getEmbeddedRecursive('MY_VAR_4'); // Should output '1 1'.
+
+// Provide defaultds for missing variables
+echo EnvDereference\Variable::get('MY_MISSING_VAR', 'default'); // Should output 'default'.
 ```
 
 ## Install

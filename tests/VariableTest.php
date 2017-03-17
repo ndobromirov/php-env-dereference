@@ -50,4 +50,22 @@ class VariableTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertEquals('1 1', Variable::getEmbeddedRecursive('MY_VAR_4'));
     }
+
+    /**
+     * @dataProvider methodProvider
+     */
+    public function testDefaultInput($method)
+    {
+        $this->assertEquals('default', call_user_func($method, 'MY_MISSING_VAR', 'default'));
+    }
+
+    public function methodProvider()
+    {
+        return [
+            [[Variable::class, 'get']],
+            [[Variable::class, 'getRecursive']],
+            [[Variable::class, 'getEmbedded']],
+            [[Variable::class, 'getEmbeddedRecursive']],
+        ];
+    }
 }
