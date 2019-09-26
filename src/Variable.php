@@ -8,7 +8,7 @@
 namespace EnvDereference;
 
 /**
- * Class containing the static metods provided by the library.
+ * Class containing the static methods provided by the library.
  *
  * @author ndobromirov
  */
@@ -17,62 +17,72 @@ class Variable
     const DEFAULT_PREFIX = '#';
 
     /**
-     * Simple and fast linear dereferencer.
+     * Simple wrapper utility around PHP's getenv function.
      *
-     * @param string $name
-     *   Name of env var to dereference.
-     * @param string $default
-     *   Value to use, when the requested variable is not found.
-     * @param string $prefix
-     *   Defauts to #.
+     * @param string $name Name of environment variable to fetch.
+     * @param mixed $default Value to use, when the requested variable is not found.
      *
-     * @return string|bool
+     * @return mixed
      *   string - Extracted value, when present.
-     *   bool - false when the env variable is not set.
+     *   mixed - $default when the env variable is not set.
      */
-    public static function get($name, $default = false, $prefix = self::DEFAULT_PREFIX)
+    public static function getWithDefault($name, $default = null)
+    {
+        return ($value = getenv($name)) !== false ? $value : $default;
+    }
+
+    /**
+     * Simple and fast linear de-referencer.
+     *
+     * @param string $name Name of environment variable to dereference.
+     * @param mixed $default Value to use, when the requested variable is not found.
+     * @param string $prefix Defaults to Variable::DEFAULT_PREFIX.
+     *
+     * @return mixed
+     *   string - Extracted value, when present.
+     *   mixed - $default when the env variable is not set.
+     */
+    public static function get($name, $default = null, $prefix = self::DEFAULT_PREFIX)
     {
         $value = self::getWithDefault($name, $default);
         if (strpos($value, $prefix) === 0) {
             $value = getenv(substr($value, strlen($prefix)));
         }
-        return $value;
+        return $value ?: $default;
     }
 
     /**
-     * Simple and fast recursive linear dereferencer.
+     * Simple and fast recursive linear de-referencer.
      *
-     * @param string $name
-     *   Name of env var to dereference.
-     * @param string $default
-     *   Value to use, when the requested variable is not found.
-     * @param string $prefix
-     *   Defauts to #.
+     * @param string $name Name of environment variable to dereference.
+     * @param mixed $default Value to use, when the requested variable is not found.
+     * @param string $prefix Defaults to Variable::DEFAULT_PREFIX.
      *
-     * @return string|bool
+     * @return mixed
      *   string - Extracted value, when present.
-     *   bool - false when the env variable is not set.
+     *   mixed - $default when the env variable is not set.
      */
-    public static function getRecursive($name, $default = false, $prefix = self::DEFAULT_PREFIX)
+    public static function getRecursive($name, $default = null, $prefix = self::DEFAULT_PREFIX)
     {
         $value = self::getWithDefault($name, $default);
         while (strpos($value, $prefix) === 0) {
             $value = getenv(substr($value, strlen($prefix)));
         }
-        return $value;
+        return $value ?: $default;
     }
 
     /**
-     * Multy-way variable dereferencing utility.
+     * Multi-way variable de-referencing utility.
      *
-     * @param type $name
-     * @param string $default
-     *   Value to use, when the requested variable is not found.
-     * @param type $prefix
+     * @param string $name Name of environment variable to dereference.
+     * @param mixed $default Value to use, when the requested variable is not found.
+     * @param string $prefix Defaults to Variable::DEFAULT_PREFIX.
      *
-     * @return type
+     * @return mixed
+     *   string - Extracted value, when present.
+     *   mixed - $default when the env variable is not set.
      */
-    public static function getEmbedded($name, $default = false, $prefix = self::DEFAULT_PREFIX)
+    public static function getEmbedded($name, $default = null, $prefix = self::DEFAULT_PREFIX)
     {
         $matches = [];
         $value = self::getWithDefault($name, $default);
@@ -85,24 +95,26 @@ class Variable
             }
             $value = strtr($value, $replacements);
         }
-        return $value;
+        return $value ?: $default;
     }
 
     /**
-     * Multy-way recursive variable dereferencing utility.
+     * Multi-way recursive variable de-referencing utility.
      *
-     * @param type $name
-     * @param string $default
-     *   Value to use, when the requested variable is not found.
-     * @param type $prefix
+     * @param string $name Name of environment variable to dereference.
+     * @param mixed $default Value to use, when the requested variable is not found.
+     * @param string $prefix Defaults to Variable::DEFAULT_PREFIX.
      *
-     * @return type
+     * @return mixed
+     *   string - Extracted value, when present.
+     *   mixed - $default when the env variable is not set.
      */
     public static function getEmbeddedRecursive($name, $default = false, $prefix = self::DEFAULT_PREFIX)
     {
         $matches = [];
         $value = self::getWithDefault($name, $default);
         $pattern = '/' . preg_quote($prefix, '/') . '([A-Z0-9_]+)/';
+
         while (false !== $value && preg_match_all($pattern, $value, $matches)) {
             $map = [];
             list ($keys, $names) = $matches;
@@ -111,11 +123,7 @@ class Variable
             }
             $value = strtr($value, $map);
         }
-        return $value;
-    }
 
-    private static function getWithDefault($name, $default)
-    {
-        return ($value = getenv($name)) !== false ? $value : $default;
+        return $value ?: $default;
     }
 }
